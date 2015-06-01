@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.cpoepke.mule.demo</groupId>
+  <artifactId>sys-test</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>System Test - Mule End to End Test Demo</name>
+  <description>System Test of the Mule End to End Test Demo</description>
+
+  <profiles>
+    <profile>
+      <id>local</id>
+      <properties>
+        <performancetest.webservice.host>localhost</performancetest.webservice.host>
+        <performancetest.webservice.port>8080</performancetest.webservice.port>
+      </properties>
+    </profile>
+    <profile>
+      <id>jenkins</id>
+      <properties>
+        <performancetest.webservice.host>my.test.system</performancetest.webservice.host>
+        <performancetest.webservice.port>80</performancetest.webservice.port>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.lazerycode.jmeter</groupId>
+        <artifactId>jmeter-maven-plugin</artifactId>
+        <version>1.8.1</version>
+        <configuration>
+          <propertiesUser>
+            <webservice.host>${performancetest.webservice.host}</webservice.host>
+            <webservice.port>${performancetest.webservice.port}</webservice.port>
+          </propertiesUser>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.lazerycode.jmeter</groupId>
+            <artifactId>jmeter-maven-plugin</artifactId>
+            <version>1.8.1</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>jmeter</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jolokia</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.11.5</version>
+
+        <configuration>
+          <dockerHost>https://localhost:2376</dockerHost>
+
+          <images>
+            <image>
+              <name>mule-app</name>
+              <build>
+                <assembly>
+                  <dockerFileDir>../mule-app</dockerFileDir>
+                </assembly>
+              </build>
+            </image>
+            <image>
+              <name>rest-mock</name>
+              <links>
+                <link>mule-app:rest-mock</link>
+              </links>
+              <run>
+                <ports>
+                  <port>2525:2525</port>
+                  <port>8080:8080</port>
+                </ports>
+              </run>
+              <build>
+                <assembly>
+                  <dockerFileDir>../rest-mock</dockerFileDir>
+                </assembly>
+              </build>
+            </image>
+          </images>
+        </configuration>
+
+        <!-- Connect start/stop to pre- and
+             post-integration-test phase, respectively if you want to start
+             your docker containers during integration tests -->
+        <executions>
+          <execution>
+            <id>start</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <!-- "build" should be used to create the images with the
+                   artefacts -->
+              <goal>build</goal>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
