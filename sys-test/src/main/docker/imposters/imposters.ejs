@@ -1,0 +1,31 @@
+{
+  "port": 9000,
+  "protocol": "http",
+  "name": "My Mock",
+  "mode": "text",
+  "stubs": [
+    {
+      "responses": [
+        {
+          "is":
+          {
+            "statusCode": 400,
+            "headers": {
+              "Content-Type": "text/xml"
+            },
+              "body": {
+                "message": "You got mocked data"
+            }
+          }
+      }
+      ],
+      "predicates": [
+        {
+          "equals": {
+            "path": "/myResource/myAction"
+          }
+        }
+      ]
+    }
+  ]
+}

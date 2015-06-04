@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.cpoepke.mule.demo</groupId>
@@ -69,20 +70,6 @@
       <artifactId>mule-module-apikit</artifactId>
       <version>${mule-module-apikit.version}</version>
     </dependency>
-
-    <!-- Mule 3rd party dependencies -->
-    <!--<dependency>-->
-      <!--<groupId>xalan</groupId>-->
-      <!--<artifactId>xalan</artifactId>-->
-    <!--</dependency>-->
-
-    <!-- for testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -131,13 +118,13 @@
         <extensions>true</extensions>
         <configuration>
           <copyToAppsDirectory>true</copyToAppsDirectory>
-        <inclusions>
-                        <inclusion>
-                            <groupId>org.mule.modules</groupId>
-                            <artifactId>mule-module-apikit</artifactId>
-                        </inclusion>
-                    </inclusions>
-                </configuration>
+          <inclusions>
+            <inclusion>
+              <groupId>org.mule.modules</groupId>
+              <artifactId>mule-module-apikit</artifactId>
+            </inclusion>
+          </inclusions>
+        </configuration>
       </plugin>
 
       <!-- project specififc -->

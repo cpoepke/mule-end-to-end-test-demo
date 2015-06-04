@@ -12,19 +12,31 @@
   <name>System Test - Mule End to End Test Demo</name>
   <description>System Test of the Mule End to End Test Demo</description>
 
+  <dependencies>
+    <!-- Dependenciy with its version which is referenced from the
+       src/main/assembly-app.xml descriptor. This is the mule app files which gets
+       stored in the  docker container which then tested -->
+    <dependency>
+      <groupId>de.cpoepke.mule.demo</groupId>
+      <artifactId>mule-app</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
       <id>local</id>
       <properties>
-        <performancetest.webservice.host>localhost</performancetest.webservice.host>
-        <performancetest.webservice.port>8080</performancetest.webservice.port>
+        <webservice.host>localhost</webservice.host>
+        <webservice.port>8080</webservice.port>
       </properties>
     </profile>
     <profile>
       <id>jenkins</id>
       <properties>
-        <performancetest.webservice.host>my.test.system</performancetest.webservice.host>
-        <performancetest.webservice.port>80</performancetest.webservice.port>
+        <webservice.host>my.test.system</webservice.host>
+        <webservice.port>8080</webservice.port>
       </properties>
     </profile>
   </profiles>
@@ -32,55 +44,43 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.lazerycode.jmeter</groupId>
-        <artifactId>jmeter-maven-plugin</artifactId>
-        <version>1.8.1</version>
-        <configuration>
-          <propertiesUser>
-            <webservice.host>${performancetest.webservice.host}</webservice.host>
-            <webservice.port>${performancetest.webservice.port}</webservice.port>
-          </propertiesUser>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.lazerycode.jmeter</groupId>
-            <artifactId>jmeter-maven-plugin</artifactId>
-            <version>1.8.1</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>test</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>jmeter</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>org.jolokia</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <version>0.11.5</version>
 
         <configuration>
-          <dockerHost>https://localhost:2376</dockerHost>
+          <dockerHost>${boot2docker.url}</dockerHost>
 
           <images>
+            <!-- Mule app container configuration -->
             <image>
               <name>mule-app</name>
+              <run>
+                <ports>
+                  <port>8080:8080</port>
+                </ports>
+              </run>
               <build>
+                <from>cpoepke/muledocker:latest</from>
+                <tags>
+                  <tag>mule-app</tag>
+                </tags>
+                <command>/opt/mule-standalone-3.6.1/bin/mule -D-Mbackend.host=${webservice.host} -D-Mbackend.port=${webservice.port}</command>
                 <assembly>
-                  <dockerFileDir>../mule-app</dockerFileDir>
+                  <mode>dir</mode>
+                  <basedir>/</basedir>
+                  <descriptor>assembly-app.xml</descriptor>
                 </assembly>
               </build>
+              <run>
+                <ports>
+                  <port>8081:8081</port>
+                </ports>
+              </run>
             </image>
+            <!-- Backend mock container configuration -->
             <image>
               <name>rest-mock</name>
-              <links>
-                <link>mule-app:rest-mock</link>
-              </links>
               <run>
                 <ports>
                   <port>2525:2525</port>
@@ -88,8 +88,15 @@
                 </ports>
               </run>
               <build>
+                <from>cpoepke/mountebank-basis:latest</from>
+                <tags>
+                  <tag>rest-mock</tag>
+                </tags>
+                <command>mb --configfile /mb/imposters.ejs --allowInjection</command>
                 <assembly>
-                  <dockerFileDir>../rest-mock</dockerFileDir>
+                  <mode>dir</mode>
+                  <basedir>/</basedir>
+                  <descriptor>assembly-mock.xml</descriptor>
                 </assembly>
               </build>
             </image>

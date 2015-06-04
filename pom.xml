@@ -14,7 +14,6 @@
 
   <modules>
     <module>mule-app</module>
-    <module>rest-mock</module>
     <module>sys-test</module>
   </modules>
 
