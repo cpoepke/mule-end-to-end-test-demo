@@ -2,13 +2,22 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
   <id>rest-mock</id>
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>de.cpoepke.mule.demo:mule-app</include>
+      </includes>
+      <outputDirectory>/dev/null</outputDirectory>
+      <outputFileNameMapping>mule-app.zip</outputFileNameMapping>
+    </dependencySet>
+  </dependencySets>
   <fileSets>
     <fileSet>
-      <directory>${project.basedir}/src/main/resources</directory>
+      <directory>${project.basedir}/src/main/docker/imposters</directory>
       <outputDirectory>/mb</outputDirectory>
       <filtered>true</filtered>
       <includes>
-        <include>*.ejs</include>
+        <include>**/*.ejs</include>
       </includes>
       <fileMode>755</fileMode>
     </fileSet>

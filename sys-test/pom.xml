@@ -55,10 +55,19 @@
             <!-- Mule app container configuration -->
             <image>
               <name>mule-app</name>
+              <alias>mule-app</alias>
               <run>
                 <ports>
-                  <port>8080:8080</port>
+                  <port>8081:8081</port>
                 </ports>
+                <links>
+                  <link>rest-mock:mock</link>
+                </links>
+                <log>
+                  <prefix>Mule</prefix>
+                  <date>ISO8601</date>
+                  <color>blue</color>
+                </log>
               </run>
               <build>
                 <from>cpoepke/muledocker:latest</from>
@@ -72,20 +81,21 @@
                   <descriptor>assembly-app.xml</descriptor>
                 </assembly>
               </build>
-              <run>
-                <ports>
-                  <port>8081:8081</port>
-                </ports>
-              </run>
             </image>
             <!-- Backend mock container configuration -->
             <image>
               <name>rest-mock</name>
+              <alias>rest-mock</alias>
               <run>
                 <ports>
                   <port>2525:2525</port>
                   <port>8080:8080</port>
                 </ports>
+                <log>
+                  <prefix>Mock</prefix>
+                  <date>ISO8601</date>
+                  <color>yellow</color>
+                </log>
               </run>
               <build>
                 <from>cpoepke/mountebank-basis:latest</from>

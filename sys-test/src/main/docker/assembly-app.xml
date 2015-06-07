@@ -10,12 +10,5 @@
       <outputDirectory>/opt/mule-standalone-3.6.1/apps</outputDirectory>
       <outputFileNameMapping>mule-app.zip</outputFileNameMapping>
     </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>de.cpoepke.mule.demo:mule-app</include>
-      </includes>
-      <outputDirectory>/opt/mule-standalone-3.6.1/apps</outputDirectory>
-      <outputFileNameMapping>mule-app.zip</outputFileNameMapping>
-    </dependencySet>
   </dependencySets>
 </assembly>
