@@ -9,20 +9,34 @@
         {
           "is":
           {
-            "statusCode": 400,
+            "statusCode": 200,
             "headers": {
-              "Content-Type": "text/xml"
+              "Content-Type": "application/json"
             },
-              "body": {
-                "message": "You got mocked data"
-            }
+            "body": "Test"
           }
-      }
+        }
       ],
       "predicates": [
         {
           "equals": {
-            "path": "/myResource/myAction"
+            "path": "/2"
+          }
+        }
+      ]
+    },
+    {
+      "responses": [
+        {
+          "is":
+          {
+            "statusCode": 200,
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "message": "You got mocked data"
+            }
           }
         }
       ]

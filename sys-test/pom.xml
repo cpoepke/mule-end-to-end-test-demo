@@ -58,10 +58,10 @@
               <alias>mule-app</alias>
               <run>
                 <ports>
-                  <port>8081:8081</port>
+                  <port>8080:8080</port>
                 </ports>
                 <links>
-                  <link>rest-mock:mock</link>
+                  <link>rest-mock:backend</link>
                 </links>
                 <log>
                   <prefix>Mule</prefix>
@@ -74,7 +74,7 @@
                 <tags>
                   <tag>mule-app</tag>
                 </tags>
-                <command>/opt/mule-standalone-3.6.1/bin/mule -D-Mbackend.host=${webservice.host} -D-Mbackend.port=${webservice.port}</command>
+                <command>/opt/mule-standalone-3.6.1/bin/mule -M-Dbackend.host=$BACKEND_PORT_9000_TCP_ADDR -M-Dbackend.port=$BACKEND_PORT_9000_TCP_PORT</command>
                 <assembly>
                   <mode>dir</mode>
                   <basedir>/</basedir>
@@ -89,7 +89,7 @@
               <run>
                 <ports>
                   <port>2525:2525</port>
-                  <port>8080:8080</port>
+                  <port>9000:9000</port>
                 </ports>
                 <log>
                   <prefix>Mock</prefix>
