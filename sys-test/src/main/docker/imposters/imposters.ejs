@@ -13,30 +13,7 @@
             "headers": {
               "Content-Type": "application/json"
             },
-            "body": "Test"
-          }
-        }
-      ],
-      "predicates": [
-        {
-          "equals": {
-            "path": "/2"
-          }
-        }
-      ]
-    },
-    {
-      "responses": [
-        {
-          "is":
-          {
-            "statusCode": 200,
-            "headers": {
-              "Content-Type": "application/json"
-            },
-            "body": {
-              "message": "You got mocked data"
-            }
+            "body": "{ \"message\": \"You got mocked data\" }"
           }
         }
       ]

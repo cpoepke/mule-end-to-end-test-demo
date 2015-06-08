@@ -12,8 +12,14 @@
   <name>System Test - Mule End to End Test Demo</name>
   <description>System Test of the Mule End to End Test Demo</description>
 
+  <properties>
+    <webservice.port>8080</webservice.port>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+
   <dependencies>
-    <!-- Dependenciy with its version which is referenced from the
+    <!-- Dependency with its version which is referenced from the
        src/main/assembly-app.xml descriptor. This is the mule app files which gets
        stored in the  docker container which then tested -->
     <dependency>
@@ -21,25 +27,30 @@
       <artifactId>mule-app</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mule.modules</groupId>
+          <artifactId>mule-module-apikit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- ======================================================================================  -->
+    <!-- Used for the integration tests -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>2.4.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>local</id>
-      <properties>
-        <webservice.host>localhost</webservice.host>
-        <webservice.port>8080</webservice.port>
-      </properties>
-    </profile>
-    <profile>
-      <id>jenkins</id>
-      <properties>
-        <webservice.host>my.test.system</webservice.host>
-        <webservice.port>8080</webservice.port>
-      </properties>
-    </profile>
-  </profiles>
 
   <build>
     <plugins>
@@ -58,11 +69,18 @@
               <alias>mule-app</alias>
               <run>
                 <ports>
-                  <port>8080:8080</port>
+                  <port>${webservice.port}:${webservice.port}</port>
                 </ports>
                 <links>
                   <link>rest-mock:backend</link>
                 </links>
+                <wait>
+                  <!-- The plugin waits until this URL is reachable via HTTP ... -->
+                  <log>Server startup</log>
+                  <url>${boot2docker.address}:${webservice.port}/api/console</url>
+                  <time>2000</time>
+                  <shutdown>500</shutdown>
+                </wait>
                 <log>
                   <prefix>Mule</prefix>
                   <date>ISO8601</date>
@@ -96,6 +114,13 @@
                   <date>ISO8601</date>
                   <color>yellow</color>
                 </log>
+                <wait>
+                  <!-- The plugin waits until this URL is reachable via HTTP ... -->
+                  <log>Server startup</log>
+                  <url>${boot2docker.address}:2525</url>
+                  <time>2000</time>
+                  <shutdown>500</shutdown>
+                </wait>
               </run>
               <build>
                 <from>cpoepke/mountebank-basis:latest</from>
@@ -135,6 +160,48 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- fails-safe-plugin should be used instead of surefire so that the container gets stopped even
+           when the tests fail -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.18.1</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- Needs to be repeated here (the following two lines strangely doesn't work when the next line is omitted although)
+                 Maven, you little sneaky beast ... -->
+            <!--<system.port>${webservice.port}</system.port>-->
+
+            <!-- Map maven variables to system properties which in turn can be used in the test classes -->
+            <system.url>${boot2docker.address}:${webservice.port}</system.url>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Tell surefire to skip test, we are using the failsafe plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
     </plugins>
   </build>
