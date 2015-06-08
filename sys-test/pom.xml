@@ -7,7 +7,7 @@
   <groupId>de.cpoepke.mule.demo</groupId>
   <artifactId>sys-test</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <name>System Test - Mule End to End Test Demo</name>
   <description>System Test of the Mule End to End Test Demo</description>
@@ -78,7 +78,7 @@
                   <!-- The plugin waits until this URL is reachable via HTTP ... -->
                   <log>Server startup</log>
                   <url>${boot2docker.address}:${webservice.port}/api/console</url>
-                  <time>2000</time>
+                  <time>8000</time>
                   <shutdown>500</shutdown>
                 </wait>
                 <log>
@@ -171,12 +171,14 @@
         <executions>
           <execution>
             <id>integration-test</id>
+            <phase>integration-test</phase>
             <goals>
               <goal>integration-test</goal>
             </goals>
           </execution>
           <execution>
             <id>verify</id>
+            <phase>verify</phase>
             <goals>
               <goal>verify</goal>
             </goals>
@@ -189,7 +191,7 @@
             <!--<system.port>${webservice.port}</system.port>-->
 
             <!-- Map maven variables to system properties which in turn can be used in the test classes -->
-            <system.url>${boot2docker.address}:${webservice.port}</system.url>
+            <system.url>http://${boot2docker.ip}:${webservice.port}</system.url>
           </systemPropertyVariables>
         </configuration>
       </plugin>
