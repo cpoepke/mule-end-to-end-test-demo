@@ -47,8 +47,8 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
     <apikit:router config-ref="api-config" doc:name="APIkit Router"/>
     <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
   </flow>
-  <flow name="get:/myResource/myAction:api-config">
-    <http:request config-ref="Backend_System_Configuration" path="someCall" method="GET" doc:name="HTTP"/>
+  <flow name="get:/myResource:api-config">
+    <http:request config-ref="Backend_System_Configuration" path="/anotherResource" method="GET" doc:name="HTTP"/>
     <byte-array-to-string-transformer doc:name="Byte Array to String"/>
   </flow>
 </mule>

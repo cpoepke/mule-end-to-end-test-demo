@@ -18,7 +18,7 @@ public class SystemIT {
     // Verify an system end-to-end call
     given()
             .param("mimeType", "application/json")
-            .get("/api/myResource/myAction")
+            .get("/api/myResource")
             .then().assertThat()
             .header("content-type", containsString("application/json"))
             .body("message", equalTo("You got mocked data"));
